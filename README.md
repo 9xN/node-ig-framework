@@ -23,8 +23,8 @@ client.on('connected', () => {
     console.log(`Following: ${this.client.user.followingCount}`);
     console.log(`Business: ${this.client.user.isBusiness}`);
     console.log(`Verified: ${this.client.user.isVerified}`);
-    console.log(`User ID: ${this.client.user.isPrivate}`);
-    console.log(`Private: ${this.client.user.id}`);
+    console.log(`User ID: ${this.client.user.id}`);
+    console.log(`Private: ${this.client.user.isPrivate}`);
 
 });
 
