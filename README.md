@@ -23,7 +23,6 @@ client.on('connected', () => {
     console.log(`Following: ${this.client.user.followingCount}`);
     console.log(`Business: ${this.client.user.isBusiness}`);
     console.log(`Verified: ${this.client.user.isVerified}`);
-    console.log(`User ID: ${this.client.user.id}`);
     console.log(`Private: ${this.client.user.isPrivate}`);
 
 });
@@ -32,10 +31,12 @@ client.on('messageCreate', (message) => {
     if (message.author.id === client.user.id) return
 
     message.markSeen();
-
+    
     if (message.content === '!ping') {
         message.reply('!pong');
     }
+    
+    message.chat.startTyping({ time: 5000 })
 });
 
 client.login('username', 'password');
