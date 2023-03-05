@@ -19,6 +19,8 @@
   "dependencies": {
     "@discordjs/collection": "^1.3.0",
     "get-urls": "^11.0.0",
+    "@discordjs/collection": "^1.3.0",
+    "get-urls": "^11.0.0",
     "instagram-private-api": "^1.45.3",
     "instagram_mqtt": "^1.2.2",
     "jimp": "^0.22.7",
