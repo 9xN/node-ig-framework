@@ -1,4 +1,5 @@
 const MessageCollector = require('./MessageCollector')
+const Util = require('../utils/Util')
 
 /**
  * Represents a Message
@@ -9,7 +10,7 @@ class Message {
      * @param {string} threadID The ID of the thread
      * @param {object} data The data for the message
      */
-    constructor (client, threadID, data) {
+    constructor(client, threadID, data) {
         /**
          * @type {Client}
          * The client that instantiated this
@@ -40,6 +41,7 @@ class Message {
          * * `media` - a photo, a file, a GIF or a sticker
          * * `voice_media` - a voice message
          * * `story_share` - a story share message
+         * * `media_share` - a media share message
          */
         this.type = data.item_type === 'link' ? 'text' : data.item_type === 'animated_media' ? 'media' : data.item_type
         /**
@@ -81,11 +83,20 @@ class Message {
                 }
             } else {
                 this.storyShareData = {
-                    author: this.client._patchOrCreateUser(data.story_share.media.user.pk, data.story_share.media.user),
+                    author: this.client._patchOrCreateUser(data.story_share.media?.user.pk, data.story_share.media?.user),
                     sourceURL: data.story_share.media.image_versions2.candidates[0].url
                 }
             }
         }
+
+        /**
+         * @typedef {object} MediaShareLocation
+         * @property {string?} coordinates: Util.extractLocationCoordinates(messageData),
+         * @property {string?} address: Util.extractLocationAddress(messageData),
+         * @property {string?} city: Util.extractLocationCity(messageData),
+         * @property {string?} name: Util.extractLocationName(messageData),
+         * @property {string?} shortName: Util.extractLocationShortName(messageData),
+         */
         /**
          * @typedef {object} MessageMediaData
          * @property {boolean} isLike Whether the media is a like (mediaData.url will be `null`)
@@ -95,10 +106,24 @@ class Message {
          * @property {string?} url The URL of the media
          */
         /**
+         * @typedef {object} MessageMediaShareData
+         * @property {string} messageSender The username of the message sender
+         * @property {string} creatorIgHandle The username of the media creator
+         * @property {string[]} images Array of urls to images in the media share
+         * @property {string?} mediaShareUrl The url to the media share
+         * @property {string} timestamp The creation time of the media share
+         * @property {MediaShareLocation?} location The location data of the media share
+         */
+        /**
          * @type {MessageMediaData?}
          * The data concerning the media
          */
         this.mediaData = undefined
+        /**
+         * @type {MessageMediaShareData?}
+         * The data concerning the media share
+         */
+        this.mediaShareData = undefined;
         if (data.item_type === 'animated_media') {
             this.mediaData = {
                 isLike: false,
@@ -119,6 +144,15 @@ class Message {
                 isAnimated: false,
                 isSticker: false,
                 url: data.media.image_versions2.candidates[0].url
+            }
+        } else if (data.item_type === 'media_share') {
+            this.mediaShareData = {
+                messageSender: this.author.username,
+                creatorIgHandle: Util.extractCreator(data),
+                images: Util.extractImages(data),
+                mediaShareUrl: Util.extractMediaShareUrl(data),
+                timestamp: Util.extractPostTimestamp(data),
+                location: Util.extractLocation(data),
             }
         }
         /**
@@ -148,7 +182,7 @@ class Message {
      * @type {Chat}
      * The chat the message was sent in
      */
-    get chat () {
+    get chat() {
         return this.client.cache.chats.get(this.chatID)
     }
 
@@ -156,11 +190,11 @@ class Message {
      * @type {User}
      * The author of the message
      */
-    get author () {
+    get author() {
         return this.client.cache.users.get(this.authorID)
     }
 
-    _patch (data) {
+    _patch(data) {
         /**
          * @typedef {object} MessageLike
          *
@@ -184,7 +218,7 @@ class Message {
      * @param {MessageCollectorOptions} options The options for the collector
      * @returns {MessageCollector}
      */
-    createMessageCollector (options) {
+    createMessageCollector(options) {
         const collector = new MessageCollector(this.chat, options)
         return collector
     }
@@ -193,15 +227,30 @@ class Message {
      * Mark the message as seen.
      * @returns {Promise<void>}
      */
-    markSeen () {
+    markSeen() {
         return this.chat.markMessageSeen(this.id)
+    }
+    
+    /**
+     * Forwards the contents of this message to the target user
+     * @param {string} userQuery Username or UserID of the target user
+     * @returns {Promise<boolean>}
+     */
+    async forwardTo(userQuery) {
+        let target = await this.client.fetchUser(userQuery);
+        let targetChat = await target.fetchPrivateChat();
+        if(this.type === 'text') {
+            await targetChat.sendMessage(this.content);
+        } else {
+            return false;
+        }
     }
 
     /**
      * Delete the message
      * @returns {Promise<void>}
      */
-    delete () {
+    delete() {
         return this.chat.deleteMessage(this.id)
     }
 
@@ -210,15 +259,15 @@ class Message {
      * @param {string} content The content of the message
      * @returns {Promise<Message>}
      */
-    reply (content) {
+    reply(content) {
         return this.chat.sendMessage(`${this.client.options.disableReplyPrefix ? '' : `@${this.author.username}, `}${content}`)
     }
 
-    toString () {
+    toString() {
         return this.content
     }
 
-    toJSON () {
+    toJSON() {
         return {
             client: this.client.toJSON(),
             chatID: this.chatID,

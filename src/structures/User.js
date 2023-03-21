@@ -1,4 +1,4 @@
-const Collection = require('@discordjs/collection')
+const Collection = require('@discordjs/collection').default
 
 /**
  * Represents a User
@@ -149,6 +149,20 @@ class User {
             this.following.set(user.pk, this.client._patchOrCreateUser(user.pk, user))
         })
         return this.following
+    }
+
+    /**
+     * Check if this user follows a specific user
+     * @param {string} query Username or UserId of the target user 
+     * @returns {Promise<boolean>}
+     */
+    async doesFollow(query) {
+        await this.fetchFollowing();
+        const userID = Util.isID(query) ? query : await this.ig.user.getIdByUsername(query)
+
+        let poi = this.following.get(userID);
+
+        return poi == null ? false : true;
     }
 
     /**
