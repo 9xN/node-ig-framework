@@ -1,6 +1,6 @@
 import { MediaShareLocation } from '../src/structures/Message';
 
-declare module '@arashgh/insta.js' {
+declare module 'node-ig-framework' {
     import ipa, { DirectThreadEntity, UserRepositoryInfoResponseUser } from 'instagram-private-api';
     import { EventEmitter } from 'events';
     import { Collection } from '@discordjs/collection';
