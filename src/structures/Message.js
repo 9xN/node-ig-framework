@@ -230,7 +230,7 @@ class Message {
     markSeen() {
         return this.chat.markMessageSeen(this.id)
     }
-    
+
     /**
      * Forwards the contents of this message to the target user
      * @param {string} userQuery Username or UserID of the target user
@@ -239,11 +239,43 @@ class Message {
     async forwardTo(userQuery) {
         let target = await this.client.fetchUser(userQuery);
         let targetChat = await target.fetchPrivateChat();
-        if(this.type === 'text') {
+        if (this.type === 'text') {
             await targetChat.sendMessage(this.content);
         } else {
             return false;
         }
+    }
+
+    /**
+     * Like the message
+     * @returns {Promise<void>}
+     */
+    async like() {
+        await this.chat.threadEntity.broadcast({
+            item: 'reaction',
+            form: {
+                item_id: this.id,
+                node_type: 'item',
+                reaction_type: 'like',
+                reaction_status: 'created'
+            },
+        });
+    };
+
+    /**
+     * Unlike the message
+     * @returns {Promise<void>}
+    */
+    async unlike() {
+        await this.chat.threadEntity.broadcast({
+            item: 'reaction',
+            form: {
+                item_id: this.id,
+                node_type: 'item',
+                reaction_type: 'like',
+                reaction_status: 'deleted'
+            },
+        });
     }
 
     /**
