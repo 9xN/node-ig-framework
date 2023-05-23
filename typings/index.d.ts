@@ -165,6 +165,8 @@ declare module '@arashgh/insta.js' {
         public forwardTo(userQuery: string): Promise<boolean>;
         public delete(): Promise<void>;
         public reply(content: string): Promise<Message>;
+        public like(): Promise<void>;
+        public unlike(): Promise<void>;
         public toString(): string;
         public toJSON(): MessageJSON;
     }
