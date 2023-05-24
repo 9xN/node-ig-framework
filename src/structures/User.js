@@ -8,7 +8,7 @@ class User {
      * @param {Client} client The instantiating client
      * @param {object} data The data for the user
      */
-    constructor (client, data) {
+    constructor(client, data) {
         /**
          * @type {Client}
          * The client that instantiated this
@@ -39,11 +39,11 @@ class User {
      * @type {Chat}
      * Private chat between the client and the user.
      */
-    get privateChat () {
+    get privateChat() {
         return this.client.cache.chats.find((chat) => chat.users.size === 1 && chat.users.first().id === this.id)
     }
 
-    _patch (data) {
+    _patch(data) {
         /**
          * @type {string}
          * The username of the user
@@ -105,7 +105,7 @@ class User {
      * Fetch the user to access all the properties
      * @returns {Promise<User>}
      */
-    async fetch () {
+    async fetch() {
         const user = await this.client.fetchUser(this.id, true)
         return user
     }
@@ -121,18 +121,22 @@ class User {
      * // Then I can use User#privateChat
      * user.privateChat.sendPhoto('https://picsum.photos/536/354');
      */
-    async fetchPrivateChat () {
+    async fetchPrivateChat() {
         if (this.privateChat) return this.privateChat
-        const chat = await this.client.createChat([ this.id ])
+        const chat = await this.client.createChat([this.id])
         return chat
     }
 
     /**
-     * Fetch the users that follow this user
+     * Fetch the users that follow this user, and fill the followers collection
+     * 
+     * note: this method is auto paginated, if you call it again, it will fetch the next page and add the users to the collection. Pages includes 100 users.
      * @returns {Promise<Collection<string, User>>}
      */
-    async fetchFollowers () {
-        const followersItems = await this.client.ig.feed.accountFollowers(this.id).items()
+    async fetchFollowers() {
+        if (!this.followersFeed) this.followersFeed = this.client.ig.feed.accountFollowers(this.id);
+
+        const followersItems = await this.followersFeed.items()
         followersItems.forEach((user) => {
             this.followers.set(user.pk, this.client._patchOrCreateUser(user.pk, user))
         })
@@ -141,10 +145,14 @@ class User {
 
     /**
      * Fetch the users that follow this user
+     * 
+     * note: this method is auto paginated, if you call it again, it will fetch the next page and add the users to the collection. Pages includes 100 users.
      * @returns {Promise<Collection<string, User>>}
      */
-    async fetchFollowing () {
-        const followingItem = await this.client.ig.feed.accountFollowing(this.id).items()
+    async fetchFollowing() {
+        if (!this.followingFeed) this.followingFeed = this.client.ig.feed.accountFollowing(this.id);
+
+        const followingItem = await this.followingFeed.items()
         followingItem.forEach((user) => {
             this.following.set(user.pk, this.client._patchOrCreateUser(user.pk, user))
         })
@@ -169,7 +177,7 @@ class User {
      * Start following a user
      * @returns {Promise<void>}
      */
-    async follow () {
+    async follow() {
         await this.client.ig.friendship.create(this.id)
     }
 
@@ -177,7 +185,7 @@ class User {
      * Stop following a user
      * @returns {Promise<void>}
      */
-    async unfollow () {
+    async unfollow() {
         await this.client.ig.friendship.destroy(this.id)
     }
 
@@ -185,7 +193,7 @@ class User {
      * Block a user
      * @returns {Promise<void>}
      */
-    async block () {
+    async block() {
         await this.client.ig.friendship.block(this.id)
     }
 
@@ -193,7 +201,7 @@ class User {
      * Unblock a user
      * @returns {Promise<void>}
      */
-    async unblock () {
+    async unblock() {
         await this.client.ig.friendship.unblock(this.id)
     }
 
@@ -201,7 +209,7 @@ class User {
      * Approve follow request
      * @returns {Promise<void>}
      */
-    async approveFollow () {
+    async approveFollow() {
         await this.client.ig.friendship.approve(this.id)
     }
 
@@ -209,7 +217,7 @@ class User {
      * Reject follow request
      * @returns {Promise<void>}
      */
-    async denyFollow () {
+    async denyFollow() {
         await this.client.ig.friendship.deny(this.id)
     }
 
@@ -217,7 +225,7 @@ class User {
      * Remove the user from your followers
      * @returns {Promise<void>}
      */
-    async removeFollower () {
+    async removeFollower() {
         await this.client.ig.friendship.removeFollower(this.id)
     }
 
@@ -226,16 +234,16 @@ class User {
      * @param {string} content The content of the message to send
      * @returns {Promise<Message>}
      */
-    async send (content) {
+    async send(content) {
         if (!this.privateChat) await this.fetchPrivateChat()
         return await this.privateChat.send(content)
     }
 
-    toString () {
+    toString() {
         return this.id
     }
 
-    toJSON () {
+    toJSON() {
         return {
             client: this.client.toJSON(),
             username: this.username,
