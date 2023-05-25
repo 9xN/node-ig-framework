@@ -12,7 +12,7 @@ declare module "node-ig-framework" {
   import { FbnsNotificationUnknown } from "instagram_mqtt";
 
   export class Client extends EventEmitter {
-    constructor(options: ClientOptions);
+    constructor(options?: ClientOptions);
 
     public user: User | null;
     public ig: ipa.IgApiClient | null;
@@ -21,21 +21,15 @@ declare module "node-ig-framework" {
     public cache: Cache;
     public eventsToReplay: any[][];
 
-    private _patchOrCreateUser(
-      userID: string,
-      userPayload: ipa.UserRepositoryInfoResponseUser
-    ): User;
-    private handleRealtimeReceive(
-      topic: Topic,
-      messages?: ParsedMessage<any>[]
-    ): void;
+    private _patchOrCreateUser(userID: number, userPayload: ipa.UserRepositoryInfoResponseUser): User;
+    private handleRealtimeReceive(topic: Topic, messages?: ParsedMessage<any>[]): void;
     private handleFbnsReceive(data: FbnsNotificationUnknown): void;
 
     public createChat(userIDs: string[]): Promise<Chat>;
-    public fetchChat(chatID: string, force: boolean): Promise<Chat>;
-    public fetchUser(query: string, force: boolean): Promise<User>;
+    public fetchChat(chatID: string, force?: boolean): Promise<Chat>;
+    public fetchUser(query: string, force?: boolean): Promise<User>;
     public logout(): void;
-    public login(username: string, password: string, state: object): void;
+    public login(username: string, password: string): void;
     public toJSON(): ClientJSON;
 
     public on<K extends keyof ClientEvents>(
@@ -157,21 +151,14 @@ declare module "node-ig-framework" {
     public client: Client;
     public id: string;
     public chatID: string;
-    public type:
-      | "text"
-      | "media"
-      | "voice_media"
-      | "story_share"
-      | "media_share";
+    public type: 'text' | 'media' | 'voice_media' | 'story_share' | 'media_share';
     public timestamp: number;
     public authorID: string;
     public content?: string;
-    public storyShareData:
-      | {
-          author: User | null;
-          sourceURL: string | null;
-        }
-      | undefined;
+    public storyShareData: {
+      author: User | null;
+      sourceURL: string | null;
+    } | undefined;
     public mediaData: {
       isLiked: boolean;
       isAnimated: boolean;
@@ -186,12 +173,10 @@ declare module "node-ig-framework" {
       timestamp: string;
       location?: MediaShareLocation;
     };
-    public voiceData:
-      | {
-          duration: number;
-          sourceURL: string;
-        }
-      | undefined;
+    public voiceData: {
+      duration: number;
+      sourceURL: string;
+    } | undefined;
     public likes: MessageLike[];
     public readonly chat: Chat;
     public readonly author: User;
@@ -378,7 +363,7 @@ declare module "node-ig-framework" {
   interface MessageJSON {
     client: ClientJSON;
     chatID: string;
-    type: "text" | "media" | "voice_media" | "story_share" | "media_share";
+    type: 'text' | 'media' | 'voice_media' | 'story_share' | 'media_share';
     timestamp: number;
     authorID: string;
     content: string;
@@ -394,28 +379,22 @@ declare module "node-ig-framework" {
       images: string[];
       mediaShareUrl?: string;
       timestamp: string;
-      location?:
-        | {
-            coordinates: string | undefined;
-            address: string | undefined;
-            city: string | undefined;
-            name: string | undefined;
-            shortName: string | undefined;
-          }
-        | undefined;
+      location?: {
+        coordinates: string | undefined;
+        address: string | undefined;
+        city: string | undefined;
+        name: string | undefined;
+        shortName: string | undefined;
+      } | undefined;
     };
-    voiceData:
-      | {
-          duration: number;
-          sourceURL: string;
-        }
-      | undefined;
-    storyShareData:
-      | {
-          author: User | null;
-          sourceURL: string | null;
-        }
-      | undefined;
+    voiceData: {
+      duration: number;
+      sourceURL: string;
+    } | undefined;
+    storyShareData: {
+      author: User | null;
+      sourceURL: string | null;
+    } | undefined;
     likes: MessageLike[];
   }
 
