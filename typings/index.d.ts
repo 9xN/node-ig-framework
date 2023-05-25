@@ -9,7 +9,7 @@ declare module 'node-ig-framework' {
     import { FbnsNotificationUnknown } from 'instagram_mqtt';
 
     export class Client extends EventEmitter {
-        constructor(options: ClientOptions);
+        constructor(options?: ClientOptions);
 
         public user: User | null;
         public ig: ipa.IgApiClient | null;
@@ -18,15 +18,15 @@ declare module 'node-ig-framework' {
         public cache: Cache
         public eventsToReplay: any[][]
 
-        private _patchOrCreateUser(userID: string, userPayload: ipa.UserRepositoryInfoResponseUser): User;
+        private _patchOrCreateUser(userID: number, userPayload: ipa.UserRepositoryInfoResponseUser): User;
         private handleRealtimeReceive(topic: Topic, messages?: ParsedMessage<any>[]): void;
         private handleFbnsReceive(data: FbnsNotificationUnknown): void;
 
         public createChat(userIDs: string[]): Promise<Chat>;
-        public fetchChat(chatID: string, force: boolean): Promise<Chat>;
-        public fetchUser(query: string, force: boolean): Promise<User>;
+        public fetchChat(chatID: string, force?: boolean): Promise<Chat>;
+        public fetchUser(query: string, force?: boolean): Promise<User>;
         public logout(): void;
-        public login(username: string, password: string, state: object): void;
+        public login(username: string, password: string): void;
         public toJSON(): ClientJSON;
 
         public on<K extends keyof ClientEvents>(event: K, listener: (...args: ClientEvents[K]) => void): this;
@@ -131,7 +131,7 @@ declare module 'node-ig-framework' {
         public chatID: string;
         public type: 'text' | 'media' | 'voice_media' | 'story_share' | 'media_share';
         public timestamp: number;
-        public authorID: string;
+        public authorID: number;
         public content?: string;
         public storyShareData: {
             author: User | null;
@@ -214,11 +214,11 @@ declare module 'node-ig-framework' {
         constructor(client: Client, data: UserData);
 
         public client: Client;
-        public id: string;
+        public id: number;
         public followers: Collection<string, User>;
         public following: Collection<string, User>;
         public username: string;
-        public fullname: string;
+        public fullName: string;
         public isPrivate: boolean;
         public isVerified: boolean;
         public isBusiness: boolean;
@@ -302,7 +302,7 @@ declare module 'node-ig-framework' {
     }
 
     interface MessageLike {
-        userID: string;
+        userID: number;
         timestamp: string;
     }
 
@@ -311,7 +311,7 @@ declare module 'node-ig-framework' {
         chatID: string;
         type: 'text' | 'media' | 'voice_media' | 'story_share' | 'media_share';
         timestamp: number;
-        authorID: string;
+        authorID: number;
         content: string;
         mediaData: {
             isLiked: boolean;
@@ -386,7 +386,7 @@ declare module 'node-ig-framework' {
     }
 
     interface UserData {
-        pk: string;
+        pk: number;
         username: string;
         fullName: string;
         isPrivate: boolean;
