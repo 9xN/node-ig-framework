@@ -21,8 +21,14 @@ declare module "node-ig-framework" {
     public cache: Cache;
     public eventsToReplay: any[][];
 
-    private _patchOrCreateUser(userID: number, userPayload: ipa.UserRepositoryInfoResponseUser): User;
-    private handleRealtimeReceive(topic: Topic, messages?: ParsedMessage<any>[]): void;
+    private _patchOrCreateUser(
+      userID: number,
+      userPayload: ipa.UserRepositoryInfoResponseUser
+    ): User;
+    private handleRealtimeReceive(
+      topic: Topic,
+      messages?: ParsedMessage<any>[]
+    ): void;
     private handleFbnsReceive(data: FbnsNotificationUnknown): void;
 
     public createChat(userIDs: number[]): Promise<Chat>;
@@ -151,14 +157,21 @@ declare module "node-ig-framework" {
     public client: Client;
     public id: string;
     public chatID: string;
-    public type: 'text' | 'media' | 'voice_media' | 'story_share' | 'media_share';
+    public type:
+      | "text"
+      | "media"
+      | "voice_media"
+      | "story_share"
+      | "media_share";
     public timestamp: number;
     public authorID: number;
     public content?: string;
-    public storyShareData: {
-      author: User | null;
-      sourceURL: string | null;
-    } | undefined;
+    public storyShareData:
+      | {
+          author: User | null;
+          sourceURL: string | null;
+        }
+      | undefined;
     public mediaData: {
       isLiked: boolean;
       isAnimated: boolean;
@@ -173,10 +186,12 @@ declare module "node-ig-framework" {
       timestamp: string;
       location?: MediaShareLocation;
     };
-    public voiceData: {
-      duration: number;
-      sourceURL: string;
-    } | undefined;
+    public voiceData:
+      | {
+          duration: number;
+          sourceURL: string;
+        }
+      | undefined;
     public likes: MessageLike[];
     public readonly chat: Chat;
     public readonly author: User;
@@ -363,7 +378,7 @@ declare module "node-ig-framework" {
   interface MessageJSON {
     client: ClientJSON;
     chatID: string;
-    type: 'text' | 'media' | 'voice_media' | 'story_share' | 'media_share';
+    type: "text" | "media" | "voice_media" | "story_share" | "media_share";
     timestamp: number;
     authorID: number;
     content: string;
@@ -379,22 +394,28 @@ declare module "node-ig-framework" {
       images: string[];
       mediaShareUrl?: string;
       timestamp: string;
-      location?: {
-        coordinates: string | undefined;
-        address: string | undefined;
-        city: string | undefined;
-        name: string | undefined;
-        shortName: string | undefined;
-      } | undefined;
+      location?:
+        | {
+            coordinates: string | undefined;
+            address: string | undefined;
+            city: string | undefined;
+            name: string | undefined;
+            shortName: string | undefined;
+          }
+        | undefined;
     };
-    voiceData: {
-      duration: number;
-      sourceURL: string;
-    } | undefined;
-    storyShareData: {
-      author: User | null;
-      sourceURL: string | null;
-    } | undefined;
+    voiceData:
+      | {
+          duration: number;
+          sourceURL: string;
+        }
+      | undefined;
+    storyShareData:
+      | {
+          author: User | null;
+          sourceURL: string | null;
+        }
+      | undefined;
     likes: MessageLike[];
   }
 
