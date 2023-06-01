@@ -31,7 +31,7 @@ declare module "node-ig-framework" {
     ): void;
     private handleFbnsReceive(data: FbnsNotificationUnknown): void;
 
-    public createChat(userIDs: string[]): Promise<Chat>;
+    public createChat(userIDs: number[]): Promise<Chat>;
     public fetchChat(chatID: string, force?: boolean): Promise<Chat>;
     public fetchUser(query: string, force?: boolean): Promise<User>;
     public logout(): void;
@@ -107,7 +107,7 @@ declare module "node-ig-framework" {
     public _keepTypingAliveInterval: NodeJS.Timeout | null;
     public _sentMessagesPromises: Collection<>;
     public readonly threadEntity: DirectThreadEntity;
-    public adminUserIDs: string[] | null;
+    public adminUserIDs: number[] | null;
     public lastActivityAt: number | null;
     public muted: boolean | null;
     public isPin: boolean | null;
@@ -164,7 +164,7 @@ declare module "node-ig-framework" {
       | "story_share"
       | "media_share";
     public timestamp: number;
-    public authorID: string;
+    public authorID: number;
     public content?: string;
     public storyShareData:
       | {
@@ -272,11 +272,11 @@ declare module "node-ig-framework" {
     constructor(client: Client, data: UserData);
 
     public client: Client;
-    public id: string;
+    public id: number;
     public followers: Collection<string, User>;
     public following: Collection<string, User>;
     public username: string;
-    public fullname: string;
+    public fullName: string;
     public isPrivate: boolean;
     public isVerified: boolean;
     public isBusiness: boolean;
@@ -348,12 +348,12 @@ declare module "node-ig-framework" {
   interface ClientJSON {
     ready: boolean;
     options: ClientOptions;
-    id: string;
+    id: number;
   }
 
   interface ChatJSON {
     client: ClientJSON;
-    adminUserIDs: string | null;
+    adminUserIDs: number | null;
     lastActivityAt: number | null;
     muted: boolean | null;
     isPin: boolean | null;
@@ -371,7 +371,7 @@ declare module "node-ig-framework" {
   }
 
   interface MessageLike {
-    userID: string;
+    userID: number;
     timestamp: string;
   }
 
@@ -380,7 +380,7 @@ declare module "node-ig-framework" {
     chatID: string;
     type: "text" | "media" | "voice_media" | "story_share" | "media_share";
     timestamp: number;
-    authorID: string;
+    authorID: number;
     content: string;
     mediaData: {
       isLiked: boolean;
@@ -428,7 +428,7 @@ declare module "node-ig-framework" {
   interface UserJSON {
     client: ClientJSON;
     username: string;
-    fullname: string;
+    fullName: string;
     isPrivate: boolean;
     isVerified: boolean;
     isBusiness: boolean;
