@@ -177,7 +177,14 @@ class User {
     });
     return this.following;
   }
-
+  /**
+   * Check if this user is followed by the client
+   * @returns {Promise<boolean>}
+   */
+  async isFollowClient() {
+    const friendshipStatus = await this.client.ig.friendship.show(this.id);
+    return friendshipStatus.followed_by;
+  }
   /**
    * Check if this user follows a specific user
    * @param {string} query Username or UserId of the target user

@@ -27,7 +27,8 @@ class MessageCollector extends EventEmitter {
 
   handleMessage = async (message) => {
     if (this.ended) return;
-    const valid = (await this.filter(message)) && message.chatID === this.chat.id;
+    const valid =
+      (await this.filter(message)) && message.chatID === this.chat.id;
     if (!valid) return;
     this.emit("message", message);
     if (this._idleTimeout) {
