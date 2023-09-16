@@ -1,8 +1,9 @@
 import { MediaShareLocation } from "../src/structures/Message";
 
 declare module "node-ig-framework" {
-  import ipa, {
+  import {
     DirectThreadEntity,
+    IgApiClient,
     UserRepositoryInfoResponseUser,
   } from "instagram-private-api";
   import { EventEmitter } from "events";
@@ -15,7 +16,7 @@ declare module "node-ig-framework" {
     constructor(options?: ClientOptions);
 
     public user: User | null;
-    public ig: ipa.IgApiClient | null;
+    public ig: IgApiClient | null;
     public ready: boolean;
     public options: ClientOptions;
     public cache: Cache;
@@ -23,7 +24,7 @@ declare module "node-ig-framework" {
 
     private _patchOrCreateUser(
       userID: number,
-      userPayload: ipa.UserRepositoryInfoResponseUser
+      userPayload: UserRepositoryInfoResponseUser
     ): User;
     private handleRealtimeReceive(
       topic: Topic,
