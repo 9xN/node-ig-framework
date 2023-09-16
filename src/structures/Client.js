@@ -35,7 +35,7 @@ class Client extends EventEmitter {
     this.user = null;
     /**
      * @type {?IgApiClient}
-     * @private
+     * API from instagram-private-api
      */
     this.ig = null;
     /**
