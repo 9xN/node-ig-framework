@@ -5,7 +5,7 @@ const {
 } = require("instagram_mqtt/dist/realtime/subscriptions");
 const { IgApiClient } = require("instagram-private-api");
 const { EventEmitter } = require("events");
-const Collection = require("@discordjs/collection").default;
+const { Collection } = require("@discordjs/collection");
 
 const Util = require("../utils/Util");
 
@@ -35,7 +35,7 @@ class Client extends EventEmitter {
     this.user = null;
     /**
      * @type {?IgApiClient}
-     * @private
+     * API from instagram-private-api
      */
     this.ig = null;
     /**
