@@ -345,7 +345,7 @@ class Client extends EventEmitter {
    */
   async login(username, password) {
     const ig = withFbns(withRealtime(new IgApiClient()));
-    ig.request.end$.subscribe(Util.saveFile(ig));
+    // ig.request.end$.subscribe(Util.saveFile(ig));
     ig.state.generateDevice(username);
 
     const state = Util.readFile();

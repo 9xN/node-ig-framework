@@ -245,7 +245,7 @@ class Chat {
   }
 
   /**
-   * Send a voice message in the chat
+   * Send a voice message in the chat (Buffer needs to be in an mp4 container as an AAC stream, see examples of how to convert a file to this format)
    * @param {Buffer} buffer The mp4 buffer to send
    * @returns {Promise<Message>}
    *
@@ -261,11 +261,34 @@ class Chat {
    *   .on('end', () => {
    *     message.chat.sendVoice(Buffer.concat(array));
    *   });
+   * 
+   * @example
+   * // This is an example of how to convert an mp3 file to the required format
+   * const ffmpeg = require('fluent-ffmpeg');
+   * 
+   * const inputPath = media.path;
+   * const outputPath = `${media.path.split('.')[0]}.mp4`
+   * mediaName = `${media.filename.split('.')[0]}.mp4`;
+   * 
+   * await new Promise((resolve, reject) => {
+   *  ffmpeg()
+   *    .input(inputPath)
+   *    .inputFormat('mp3')
+   *    .output(outputPath)
+   *    .on('end', () => {
+   *      unlinkSync(inputPath);
+   *      resolve(outputPath)
+   *    })
+   *    .on('error', (err: any) => reject(err))
+   *    .run();
+   * });
+   *
+   * sentMessage = await chat.sendVoice(readFileSync(outputPath)); // readFileSync is from fs
    */
   sendVoice(buffer) {
     return new Promise((resolve) => {
       this.threadEntity.broadcastVoice({ file: buffer }).then((upload) => {
-        let itemID = upload.message_metadata[0].item_id;
+        let itemID = upload.item_id;
         if (this.typing && !this._disableTypingOnSend) this._keepTypingAlive();
         this._sentMessagesPromises.set(itemID, resolve);
         if (this.messages.has(itemID)) {
@@ -303,6 +326,28 @@ class Chat {
             }
           });
       });
+    });
+  }
+
+  /**
+   * Send a video in the chat (Instagram has a limit of 60 seconds, just accepts Buffer for now)
+   * @param   {Buffer}  buffer  The video to send
+   * @return  {Promise<Message>}
+   * 
+   */
+  sendVideo(buffer) {
+    return new Promise((resolve) => {
+      this.threadEntity.broadcastVideo({
+        video: buffer,
+      }).then((upload) => {
+        let itemID = upload.item_id;
+        if (this.typing && !this._disableTypingOnSend) this._keepTypingAlive();
+        this._sentMessagesPromises.set(itemID, resolve);
+        if (this.messages.has(itemID)) {
+          this._sentMessagesPromises.delete(itemID);
+          resolve(this.messages.get(itemID));
+        }
+      })
     });
   }
 
