@@ -131,6 +131,9 @@ declare module "node-ig-framework" {
     public sendPhoto(
       attachment: string | Buffer | Attachment
     ): Promise<Message>;
+    public sendVideo(
+      attachment: string | Buffer | Attachment
+    ): Promise<Message>;
     public toJSON(): ChatJSON;
   }
 
