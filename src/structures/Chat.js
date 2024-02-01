@@ -306,6 +306,33 @@ class Chat {
     });
   }
 
+  /**
+   * Send a video in the chat
+   * @param   {Buffer}  attachment  The video to send
+   * @return  {Promise<Message>}
+   * 
+   */
+  sendVideo(attachment) {
+    return new Promise((resolve) => {
+      if (!(attachment instanceof Attachment)) {
+        attachment = new Attachment(attachment);
+      }
+      attachment._verify().then(() => {
+        this.threadEntity
+          .broadcastVideo({ file: attachment.file })
+          .then(({ item_id: itemID }) => {
+            if (this.typing && !this._disableTypingOnSend)
+              this._keepTypingAlive();
+            this._sentMessagesPromises.set(itemID, resolve);
+            if (this.messages.has(itemID)) {
+              this._sentMessagesPromises.delete(itemID);
+              resolve(this.messages.get(itemID));
+            }
+          });
+      });
+    });
+  }
+
   toJSON() {
     return {
       client: this.client.toJSON(),
