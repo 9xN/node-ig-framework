@@ -340,7 +340,7 @@ class Chat {
       if (!(attachment instanceof Attachment)) {
         attachment = new Attachment(attachment);
       }
-      attachment._verify().then(() => {
+      attachment._verify(false).then(() => {
         this.threadEntity
           .broadcastVideo({ file: attachment.file })
           .then(({ item_id: itemID }) => {
