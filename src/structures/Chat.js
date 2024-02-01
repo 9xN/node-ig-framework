@@ -331,28 +331,23 @@ class Chat {
 
   /**
    * Send a video in the chat (Instagram has a limit of 60 seconds, just accepts Buffer for now)
-   * @param   {Buffer}  attachment  The video to send
+   * @param   {Buffer}  buffer  The video to send
    * @return  {Promise<Message>}
    * 
    */
-  sendVideo(attachment) {
+  sendVideo(buffer) {
     return new Promise((resolve) => {
-      if (!(attachment instanceof Attachment)) {
-        attachment = new Attachment(attachment);
-      }
-      attachment._verify(false).then(() => {
-        this.threadEntity
-          .broadcastVideo({ file: attachment.file })
-          .then(({ item_id: itemID }) => {
-            if (this.typing && !this._disableTypingOnSend)
-              this._keepTypingAlive();
-            this._sentMessagesPromises.set(itemID, resolve);
-            if (this.messages.has(itemID)) {
-              this._sentMessagesPromises.delete(itemID);
-              resolve(this.messages.get(itemID));
-            }
-          });
-      });
+      this.threadEntity.broadcastVideo({
+        video: buffer,
+      }).then((upload) => {
+        let itemID = upload.item_id;
+        if (this.typing && !this._disableTypingOnSend) this._keepTypingAlive();
+        this._sentMessagesPromises.set(itemID, resolve);
+        if (this.messages.has(itemID)) {
+          this._sentMessagesPromises.delete(itemID);
+          resolve(this.messages.get(itemID));
+        }
+      })
     });
   }
 

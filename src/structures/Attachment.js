@@ -8,15 +8,11 @@ class Attachment {
     this.file = null;
   }
 
-  async _verify(isImage = true) {
+  async _verify() {
     if (!this.data) {
       throw new Error("Can not create empty attachment!");
     } else if (Buffer.isBuffer(this.data)) {
-      if(isImage) {
-        await this._handleImageBuffer(this.data);
-      } else {
-        await this._handleVideoBuffer(this.data);
-      }
+      await this._handleBuffer(this.data);
     } else if (typeof this.data === "string") {
       if (/http(s)?:\/\//.test(this.data)) {
         await this._handleURL(this.data);
@@ -34,26 +30,22 @@ class Attachment {
       if (file.endsWith(".jpg") || file.endsWith(".jpeg")) {
         this.file = fileStream;
       } else {
-        await this._handleImageBuffer(fileStream);
+        await this._handleBuffer(fileStream);
       }
     } catch (error) {
       throw new Error("Couldn't resolve the file.");
     }
   }
 
-  async _handleImageBuffer(data) {
+  async _handleBuffer(data) {
     const image = await Jimp.read(data);
     this.file = await image.getBufferAsync(Jimp.MIME_JPEG);
-  }
-
-  async _handleVideoBuffer(data) {
-    this.file = data;
   }
 
   async _handleURL(link) {
     try {
       const res = await fetch(link);
-      await this._handleImageBuffer(await res.buffer());
+      await this._handleBuffer(await res.buffer());
     } catch (error) {
       throw new Error("Unable to fetch image from URL.");
     }
