@@ -1,9 +1,9 @@
+import { IgApiClient } from "instagram-private-api";
 import { MediaShareLocation } from "../src/structures/Message";
 
 declare module "node-ig-framework" {
   import {
     DirectThreadEntity,
-    IgApiClient,
     UserRepositoryInfoResponseUser,
   } from "instagram-private-api";
   import { EventEmitter } from "events";
