@@ -342,7 +342,7 @@ class Client extends EventEmitter {
    * Log the bot in to Instagram
    * @param {string} username The username of the Instagram account.
    * @param {string} password The password of the Instagram account.
-   * @returns {Promise<boolean>}
+   * @returns {Promise<Object>}
    */
   async login(username, password) {
     try {
@@ -414,10 +414,15 @@ class Client extends EventEmitter {
         }
       });
 
-      return true;
-    } catch (err) {
-      console.error(err?.message);
-      return false;
+      return {
+        success: true,
+        error: null,
+      };
+    } catch (err) {  
+      return {
+        success: false,
+        error: err?.message,
+      };
     }
   }
 

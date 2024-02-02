@@ -36,7 +36,7 @@ declare module "node-ig-framework" {
     public fetchChat(chatID: string, force?: boolean): Promise<Chat>;
     public fetchUser(query: string, force?: boolean): Promise<User>;
     public logout(): void;
-    public login(username: string, password: string): Promise<boolean>;
+    public login(username: string, password: string): Promise<LoginResponse>;
     public toJSON(): ClientJSON;
 
     public on<K extends keyof ClientEvents>(
@@ -503,6 +503,11 @@ declare module "node-ig-framework" {
   interface MessageCollectorEvents {
     message: [Message];
     end: [Message];
+  }
+
+  interface LoginResponse {
+    success: boolean;
+    error: string | null;
   }
 
   //#endregion
