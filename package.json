@@ -24,6 +24,10 @@
     "jimp": "^0.22.8",
     "node-fetch": "^2.6.1"
   },
+  "bundleDependencies": [
+    "instagram_mqtt",
+    "instagram-private-api"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/9xN/node-ig-framework"
