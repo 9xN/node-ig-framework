@@ -342,75 +342,83 @@ class Client extends EventEmitter {
    * Log the bot in to Instagram
    * @param {string} username The username of the Instagram account.
    * @param {string} password The password of the Instagram account.
+   * @returns {Promise<boolean>}
    */
   async login(username, password) {
-    const ig = withFbns(withRealtime(new IgApiClient()));
-    // ig.request.end$.subscribe(Util.saveFile(ig));
-    ig.state.generateDevice(username);
+    try {
+      const ig = withFbns(withRealtime(new IgApiClient()));
+      // ig.request.end$.subscribe(Util.saveFile(ig));
+      ig.state.generateDevice(username);
+  
+      const state = Util.readFile();
+      if (state) {
+        await ig.importState(state);
+      }
+      //await ig.simulate.preLoginFlow()
+      const response = await ig.account.login(username, password);
+      const userData = await ig.user.info(response.pk);
+      this.user = new ClientUser(this, {
+        ...response,
+        ...userData,
+      });
+      this.cache.users.set(this.user.id, this.user);
+      this.emit("debug", "logged", this.user);
+  
+      const threads = [
+        ...(await ig.feed.directInbox().items()),
+        ...(await ig.feed.directPending().items()),
+      ];
+      threads.forEach((thread) => {
+        const chat = new Chat(this, thread.thread_id, thread);
+        this.cache.chats.set(thread.thread_id, chat);
+        if (chat.pending) {
+          this.cache.pendingChats.set(thread.thread_id, chat);
+        }
+      });
+      ig.realtime.on("message", (data) => this.handleRealtimeReceive(data));
+      ig.realtime.on("error", console.error);
+      ig.realtime.on("close", () => console.error("RealtimeClient closed"));
+  
+      await ig.realtime.connect({
+        graphQlSubs: [
+          // these are some subscriptions
+          GraphQLSubscriptions.getAppPresenceSubscription(),
+          GraphQLSubscriptions.getZeroProvisionSubscription(ig.state.phoneId),
+          GraphQLSubscriptions.getDirectStatusSubscription(),
+          GraphQLSubscriptions.getDirectTypingSubscription(ig.state.cookieUserId),
+          GraphQLSubscriptions.getAsyncAdSubscription(ig.state.cookieUserId),
+        ],
+        // optional
+        skywalkerSubs: [
+          SkywalkerSubscriptions.directSub(ig.state.cookieUserId),
+          SkywalkerSubscriptions.liveSub(ig.state.cookieUserId),
+        ],
+        irisData: await ig.feed.directInbox().request(),
+      });
+      // PartialObserver<FbnsNotificationUnknown>
+      ig.fbns.on("push", (data) => this.handleFbnsReceive(data));
+  
+      await ig.fbns.connect({
+        autoReconnect: true,
+      });
+  
+      this.ig = ig;
+      this.ready = true;
+      this.emit("connected");
+      this.eventsToReplay.forEach((event) => {
+        const eventType = event.shift();
+        if (eventType === "realtime") {
+          this.handleRealtimeReceive(...event);
+        } else if (eventType === "fbns") {
+          this.handleFbnsReceive(...event);
+        }
+      });
 
-    const state = Util.readFile();
-    if (state) {
-      await ig.importState(state);
+      return true;
+    } catch (err) {
+      console.error(err?.message);
+      return false;
     }
-    //await ig.simulate.preLoginFlow()
-    const response = await ig.account.login(username, password);
-    const userData = await ig.user.info(response.pk);
-    this.user = new ClientUser(this, {
-      ...response,
-      ...userData,
-    });
-    this.cache.users.set(this.user.id, this.user);
-    this.emit("debug", "logged", this.user);
-
-    const threads = [
-      ...(await ig.feed.directInbox().items()),
-      ...(await ig.feed.directPending().items()),
-    ];
-    threads.forEach((thread) => {
-      const chat = new Chat(this, thread.thread_id, thread);
-      this.cache.chats.set(thread.thread_id, chat);
-      if (chat.pending) {
-        this.cache.pendingChats.set(thread.thread_id, chat);
-      }
-    });
-    ig.realtime.on("message", (data) => this.handleRealtimeReceive(data));
-    ig.realtime.on("error", console.error);
-    ig.realtime.on("close", () => console.error("RealtimeClient closed"));
-
-    await ig.realtime.connect({
-      graphQlSubs: [
-        // these are some subscriptions
-        GraphQLSubscriptions.getAppPresenceSubscription(),
-        GraphQLSubscriptions.getZeroProvisionSubscription(ig.state.phoneId),
-        GraphQLSubscriptions.getDirectStatusSubscription(),
-        GraphQLSubscriptions.getDirectTypingSubscription(ig.state.cookieUserId),
-        GraphQLSubscriptions.getAsyncAdSubscription(ig.state.cookieUserId),
-      ],
-      // optional
-      skywalkerSubs: [
-        SkywalkerSubscriptions.directSub(ig.state.cookieUserId),
-        SkywalkerSubscriptions.liveSub(ig.state.cookieUserId),
-      ],
-      irisData: await ig.feed.directInbox().request(),
-    });
-    // PartialObserver<FbnsNotificationUnknown>
-    ig.fbns.on("push", (data) => this.handleFbnsReceive(data));
-
-    await ig.fbns.connect({
-      autoReconnect: true,
-    });
-
-    this.ig = ig;
-    this.ready = true;
-    this.emit("connected");
-    this.eventsToReplay.forEach((event) => {
-      const eventType = event.shift();
-      if (eventType === "realtime") {
-        this.handleRealtimeReceive(...event);
-      } else if (eventType === "fbns") {
-        this.handleFbnsReceive(...event);
-      }
-    });
   }
 
   toJSON() {
