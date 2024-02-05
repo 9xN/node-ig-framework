@@ -155,7 +155,7 @@ class Message {
         isLike: true,
         isAnimated: false,
         isSticker: false,
-        url: data.media.image_versions2.candidates[0].url,
+        url: data?.media?.video_versions[0]?.url || data?.media?.image_versions2?.candidates[0]?.url
       };
     } else if (data.item_type === "media_share") {
       this.mediaShareData = {
