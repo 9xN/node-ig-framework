@@ -47,8 +47,8 @@ class Message {
       data.item_type === "link"
         ? "text"
         : data.item_type === "animated_media"
-        ? "media"
-        : data.item_type;
+          ? "media"
+          : data.item_type;
     /**
      * @type {number}
      * The timestamp the message was sent at
@@ -155,7 +155,8 @@ class Message {
         isLike: true,
         isAnimated: false,
         isSticker: false,
-        url: ((data?.media?.video_versions?.length >= 1 && data?.media?.video_versions[0]?.url) || data?.media?.image_versions2?.candidates[0]?.url)
+        url: ((data?.media?.video_versions?.length >= 1 && data?.media?.video_versions[0]?.url) || data?.media?.image_versions2?.candidates[0]?.url),
+        type: data?.media?.video_versions?.length >= 1 ? "video" : "image"
       };
     } else if (data.item_type === "media_share") {
       this.mediaShareData = {
@@ -166,6 +167,14 @@ class Message {
         timestamp: Util.extractPostTimestamp(data),
         location: Util.extractLocation(data),
       };
+    } else if (data.item_type === "reel_share") {
+      this.mediaShareData = {
+        reel_type: data.reel_share.type,
+        reel_owner_id: data.reel_share.reel_owner_id,
+        text: data.reel_share.text,
+        url: (data?.reel_share?.media?.video_versions?.length >= 1 && data?.reel_share?.media?.video_versions[0]?.url) || data?.reel_share?.media?.image_versions2?.candidates[0]?.url,
+        type: data?.reel_share?.media?.video_versions?.length >= 1 ? "video" : "image",
+      }
     }
     /**
      * @typedef {object} MessageVoiceData
@@ -179,9 +188,9 @@ class Message {
     this.voiceData =
       this.type === "voice_media"
         ? {
-            duration: data.voice_media.media.audio.duration,
-            sourceURL: data.voice_media.media.audio.audio_src,
-          }
+          duration: data.voice_media.media.audio.duration,
+          sourceURL: data.voice_media.media.audio.audio_src,
+        }
         : undefined;
 
     // handle promises
@@ -223,11 +232,11 @@ class Message {
     this.likes =
       "reactions" in data
         ? data.reactions.likes.map((r) => {
-            return {
-              userID: r.sender_id,
-              timestamp: r.timestamp,
-            };
-          })
+          return {
+            userID: r.sender_id,
+            timestamp: r.timestamp,
+          };
+        })
         : [];
   }
 
@@ -311,10 +320,9 @@ class Message {
    */
   reply(content) {
     return this.chat.sendMessage(
-      `${
-        this.client.options.disableReplyPrefix
-          ? ""
-          : `@${this.author.username}, `
+      `${this.client.options.disableReplyPrefix
+        ? ""
+        : `@${this.author.username}, `
       }${content}`
     );
   }
