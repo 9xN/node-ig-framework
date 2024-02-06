@@ -181,6 +181,7 @@ declare module "node-ig-framework" {
       isAnimated: boolean;
       isSticker: boolean;
       url?: string;
+      type?: string;
     };
     public mediaShareData: {
       messageSender: string;
@@ -189,6 +190,13 @@ declare module "node-ig-framework" {
       mediaShareUrl?: string;
       timestamp: string;
       location?: MediaShareLocation;
+    };
+    public reelsShareData: {
+      reel_type: string;
+      reel_owner_id: number;
+      text: string;
+      url: string;
+      type: string;
     };
     public voiceData:
       | {

@@ -127,6 +127,14 @@ class Message {
      * @property {MediaShareLocation?} location The location data of the media share
      */
     /**
+     * @typedef {object} MessageReelsShareData
+     * @property {string} reel_type The type of the reel share
+     * @property {string} reel_owner_id The ID of the reel owner
+     * @property {string} text The text of the reel share
+     * @property {string} url The URL of the reel share
+     * @property {string} type The type of the reel share
+     */
+    /**
      * @type {MessageMediaData?}
      * The data concerning the media
      */
@@ -136,6 +144,12 @@ class Message {
      * The data concerning the media share
      */
     this.mediaShareData = undefined;
+    /**
+     * @type {MessageReelsShareData?}
+     * The data concerning the reels share
+     */
+    this.reelsShareData = undefined;
+
     if (data.item_type === "animated_media") {
       this.mediaData = {
         isLike: false,
@@ -168,7 +182,7 @@ class Message {
         location: Util.extractLocation(data),
       };
     } else if (data.item_type === "reel_share") {
-      this.mediaShareData = {
+      this.reelsShareData = {
         reel_type: data.reel_share.type,
         reel_owner_id: data.reel_share.reel_owner_id,
         text: data.reel_share.text,
