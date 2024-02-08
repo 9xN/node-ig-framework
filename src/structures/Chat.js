@@ -3,6 +3,7 @@ const { Collection } = require("@discordjs/collection");
 const Util = require("../utils/Util");
 const Message = require("./Message");
 const Attachment = require("./Attachment");
+const Client = require("./Client");
 
 /**
  * Represents a chat between one or more users.

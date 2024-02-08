@@ -6,6 +6,9 @@
   "types": "./typings/index.d.ts",
   "author": "github.com/9xN",
   "license": "AGPL-3.0",
+  "scripts": {
+    "postinstall": "npm install instagram-private-api"
+  },
   "exports": {
     ".": [
       {
@@ -23,6 +26,9 @@
     "instagram-private-api": "^1.45.3",
     "jimp": "^0.22.8",
     "node-fetch": "^2.6.1"
+  },
+  "peerDependencies": {
+    "instagram-private-api": "^1.45.3"
   },
   "repository": {
     "type": "git",

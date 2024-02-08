@@ -1,9 +1,9 @@
+import { IgApiClient } from "instagram-private-api";
 import { MediaShareLocation } from "../src/structures/Message";
 
 declare module "node-ig-framework" {
   import {
     DirectThreadEntity,
-    IgApiClient,
     UserRepositoryInfoResponseUser,
   } from "instagram-private-api";
   import { EventEmitter } from "events";
@@ -36,7 +36,7 @@ declare module "node-ig-framework" {
     public fetchChat(chatID: string, force?: boolean): Promise<Chat>;
     public fetchUser(query: string, force?: boolean): Promise<User>;
     public logout(): void;
-    public login(username: string, password: string): void;
+    public login(username: string, password: string): Promise<LoginResponse>;
     public toJSON(): ClientJSON;
 
     public on<K extends keyof ClientEvents>(
@@ -181,6 +181,7 @@ declare module "node-ig-framework" {
       isAnimated: boolean;
       isSticker: boolean;
       url?: string;
+      type?: string;
     };
     public mediaShareData: {
       messageSender: string;
@@ -189,6 +190,13 @@ declare module "node-ig-framework" {
       mediaShareUrl?: string;
       timestamp: string;
       location?: MediaShareLocation;
+    };
+    public reelsShareData: {
+      reel_type: string;
+      reel_owner_id: number;
+      text: string;
+      url: string;
+      type: string;
     };
     public voiceData:
       | {
@@ -503,6 +511,11 @@ declare module "node-ig-framework" {
   interface MessageCollectorEvents {
     message: [Message];
     end: [Message];
+  }
+
+  interface LoginResponse {
+    success: boolean;
+    error: string | null;
   }
 
   //#endregion
