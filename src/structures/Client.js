@@ -349,7 +349,7 @@ class Client extends EventEmitter {
       const ig = withFbns(withRealtime(new IgApiClient()));
       // ig.request.end$.subscribe(Util.saveFile(ig));
       ig.state.generateDevice(username);
-  
+
       const state = Util.readFile();
       if (state) {
         await ig.importState(state);
@@ -363,7 +363,7 @@ class Client extends EventEmitter {
       });
       this.cache.users.set(this.user.id, this.user);
       this.emit("debug", "logged", this.user);
-  
+
       const threads = [
         ...(await ig.feed.directInbox().items()),
         ...(await ig.feed.directPending().items()),
@@ -378,14 +378,16 @@ class Client extends EventEmitter {
       ig.realtime.on("message", (data) => this.handleRealtimeReceive(data));
       ig.realtime.on("error", console.error);
       ig.realtime.on("close", () => console.error("RealtimeClient closed"));
-  
+
       await ig.realtime.connect({
         graphQlSubs: [
           // these are some subscriptions
           GraphQLSubscriptions.getAppPresenceSubscription(),
           GraphQLSubscriptions.getZeroProvisionSubscription(ig.state.phoneId),
           GraphQLSubscriptions.getDirectStatusSubscription(),
-          GraphQLSubscriptions.getDirectTypingSubscription(ig.state.cookieUserId),
+          GraphQLSubscriptions.getDirectTypingSubscription(
+            ig.state.cookieUserId
+          ),
           GraphQLSubscriptions.getAsyncAdSubscription(ig.state.cookieUserId),
         ],
         // optional
@@ -397,11 +399,11 @@ class Client extends EventEmitter {
       });
       // PartialObserver<FbnsNotificationUnknown>
       ig.fbns.on("push", (data) => this.handleFbnsReceive(data));
-  
+
       await ig.fbns.connect({
         autoReconnect: true,
       });
-  
+
       this.ig = ig;
       this.ready = true;
       this.emit("connected");
@@ -418,7 +420,7 @@ class Client extends EventEmitter {
         success: true,
         error: null,
       };
-    } catch (err) {  
+    } catch (err) {
       return {
         success: false,
         error: err?.message,

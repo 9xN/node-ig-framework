@@ -262,15 +262,15 @@ class Chat {
    *   .on('end', () => {
    *     message.chat.sendVoice(Buffer.concat(array));
    *   });
-   * 
+   *
    * @example
    * // This is an example of how to convert an mp3 file to the required format
    * const ffmpeg = require('fluent-ffmpeg');
-   * 
+   *
    * const inputPath = media.path;
    * const outputPath = `${media.path.split('.')[0]}.mp4`
    * mediaName = `${media.filename.split('.')[0]}.mp4`;
-   * 
+   *
    * await new Promise((resolve, reject) => {
    *  ffmpeg()
    *    .input(inputPath)
@@ -334,21 +334,24 @@ class Chat {
    * Send a video in the chat (Instagram has a limit of 60 seconds, just accepts Buffer for now)
    * @param   {Buffer}  buffer  The video to send
    * @return  {Promise<Message>}
-   * 
+   *
    */
   sendVideo(buffer) {
     return new Promise((resolve) => {
-      this.threadEntity.broadcastVideo({
-        video: buffer,
-      }).then((upload) => {
-        let itemID = upload.item_id;
-        if (this.typing && !this._disableTypingOnSend) this._keepTypingAlive();
-        this._sentMessagesPromises.set(itemID, resolve);
-        if (this.messages.has(itemID)) {
-          this._sentMessagesPromises.delete(itemID);
-          resolve(this.messages.get(itemID));
-        }
-      })
+      this.threadEntity
+        .broadcastVideo({
+          video: buffer,
+        })
+        .then((upload) => {
+          let itemID = upload.item_id;
+          if (this.typing && !this._disableTypingOnSend)
+            this._keepTypingAlive();
+          this._sentMessagesPromises.set(itemID, resolve);
+          if (this.messages.has(itemID)) {
+            this._sentMessagesPromises.delete(itemID);
+            resolve(this.messages.get(itemID));
+          }
+        });
     });
   }
 
