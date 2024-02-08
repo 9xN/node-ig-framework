@@ -172,6 +172,14 @@ class Message {
         url: ((data?.media?.video_versions?.length >= 1 && data?.media?.video_versions[0]?.url) || data?.media?.image_versions2?.candidates[0]?.url),
         type: data?.media?.video_versions?.length >= 1 ? "video" : "image"
       };
+    } else if (data.item_type === "raven_media") {
+      this.mediaData = {
+        isLike: true,
+        isAnimated: false,
+        isSticker: false,
+        url: ((data?.visual_media?.media?.video_versions?.length >= 1 && data?.visual_media?.media?.video_versions[0]?.url) || data?.visual_media?.media?.image_versions2?.candidates[0]?.url),
+        type: data?.visual_media?.media?.video_versions?.length >= 1 ? "video" : "image"
+      };
     } else if (data.item_type === "media_share") {
       this.mediaShareData = {
         messageSender: this.author.username,
