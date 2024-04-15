@@ -1,7 +1,7 @@
 "use strict";
 
 const fs = require("fs");
-const { IgApiClientExt } = require("instagram_mqtt");
+const { IgApiClientExt } = require("node_instagram_mqtt");
 
 /**
  * Multiple static utility function
