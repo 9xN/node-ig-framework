@@ -8,9 +8,9 @@ declare module "node-ig-framework" {
   } from "instagram-private-api";
   import { EventEmitter } from "events";
   import { Collection } from "@discordjs/collection";
-  import { Topic } from "node_instagram_mqtt/dist/topic";
-  import { ParsedMessage } from "node_instagram_mqtt/dist/realtime/parsers";
-  import { FbnsNotificationUnknown } from "node_instagram_mqtt";
+  import { Topic } from "instagram_mqtt/dist/topic";
+  import { ParsedMessage } from "instagram_mqtt/dist/realtime/parsers";
+  import { FbnsNotificationUnknown } from "instagram_mqtt";
 
   export class Client extends EventEmitter {
     constructor(options?: ClientOptions);
