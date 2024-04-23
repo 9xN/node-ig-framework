@@ -22,10 +22,10 @@
   "dependencies": {
     "@discordjs/collection": "^1.5.3",
     "get-urls": "^10.0.0",
-    "node_instagram_mqtt": "^1.2.2",
     "instagram-private-api": "^1.46.1",
     "jimp": "^0.22.8",
-    "node-fetch": "^2.6.1"
+    "instagram_mqtt": "^1.2.3",
+    "node-fetch": "^2.7.0"
   },
   "repository": {
     "type": "git",
