@@ -1,4 +1,3 @@
-// Import necessary modules
 const fetch = require("node-fetch");
 const fs = require("fs").promises;
 const Jimp = require("jimp");
