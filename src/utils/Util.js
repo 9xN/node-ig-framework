@@ -65,7 +65,7 @@ class Util {
    * @return {boolean}
    */
   static isMessageValid(message) {
-    return message.timestamp / 1000 + 10000 > Date.now();
+    return ((message.timestamp / 1000 + 10000 > Date.now()) && (message.type)) ? true : false;
   }
 
   /**
