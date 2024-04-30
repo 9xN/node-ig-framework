@@ -421,6 +421,7 @@ class Client extends EventEmitter {
         error: null,
       };
     } catch (err) {
+      console.error(err?.message);
       return {
         success: false,
         error: err?.message,
