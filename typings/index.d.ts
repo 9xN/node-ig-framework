@@ -36,7 +36,7 @@ declare module "node-ig-framework" {
     public fetchChat(chatID: string, force?: boolean): Promise<Chat>;
     public fetchUser(query: string, force?: boolean): Promise<User>;
     public logout(): void;
-    public login(username: string, password: string): Promise<LoginResponse>;
+    public login(username: string, password: string, options?: LoginOptions): Promise<LoginResponse>;
     public toJSON(): ClientJSON;
 
     public on<K extends keyof ClientEvents>(
@@ -172,9 +172,9 @@ declare module "node-ig-framework" {
     public content?: string;
     public storyShareData:
       | {
-          author: User | null;
-          sourceURL: string | null;
-        }
+        author: User | null;
+        sourceURL: string | null;
+      }
       | undefined;
     public mediaData: {
       isLiked: boolean;
@@ -200,9 +200,9 @@ declare module "node-ig-framework" {
     };
     public voiceData:
       | {
-          duration: number;
-          sourceURL: string;
-        }
+        duration: number;
+        sourceURL: string;
+      }
       | undefined;
     public likes: MessageLike[];
     public readonly chat: Chat;
@@ -341,6 +341,10 @@ declare module "node-ig-framework" {
     ): MediaShareLocation | undefined;
   }
 
+  interface LoginOptions {
+    saveState?: boolean;
+  };
+
   interface StartTypingOptions {
     duration: number;
     disableOnSend: boolean;
@@ -407,27 +411,27 @@ declare module "node-ig-framework" {
       mediaShareUrl?: string;
       timestamp: string;
       location?:
-        | {
-            coordinates: string | undefined;
-            address: string | undefined;
-            city: string | undefined;
-            name: string | undefined;
-            shortName: string | undefined;
-          }
-        | undefined;
+      | {
+        coordinates: string | undefined;
+        address: string | undefined;
+        city: string | undefined;
+        name: string | undefined;
+        shortName: string | undefined;
+      }
+      | undefined;
     };
     voiceData:
-      | {
-          duration: number;
-          sourceURL: string;
-        }
-      | undefined;
+    | {
+      duration: number;
+      sourceURL: string;
+    }
+    | undefined;
     storyShareData:
-      | {
-          author: User | null;
-          sourceURL: string | null;
-        }
-      | undefined;
+    | {
+      author: User | null;
+      sourceURL: string | null;
+    }
+    | undefined;
     likes: MessageLike[];
   }
 
