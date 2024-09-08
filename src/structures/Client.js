@@ -344,10 +344,14 @@ class Client extends EventEmitter {
    * @param {string} password The password of the Instagram account.
    * @returns {Promise<Object>}
    */
-  async login(username, password) {
+  async login(username, password, options) {
     try {
       const ig = withFbns(withRealtime(new IgApiClient()));
-      // ig.request.end$.subscribe(Util.saveFile(ig));
+
+      if (options.saveState) {
+        ig.request.end$.subscribe(Util.saveFile(ig));
+      };
+
       ig.state.generateDevice(username);
 
       const state = Util.readFile();
