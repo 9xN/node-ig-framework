@@ -38,5 +38,12 @@ client.on("messageCreate", (message) => {
   message.chat.startTyping({ time: 5000 });
 });
 
-client.login("username", "password");
+client.login("username", "password",{
+  saveState: true,
+  socksProxy: {
+    type: 5,
+    host: '127.0.0.1',
+    port: 1080
+  }
+});
 ```

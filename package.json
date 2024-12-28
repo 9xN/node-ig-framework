@@ -25,7 +25,8 @@
     "instagram-private-api": "^1.46.1",
     "jimp": "^0.22.8",
     "instagram_mqtt": "^1.2.3",
-    "node-fetch": "^2.7.0"
+    "node-fetch": "^2.7.0",
+    "socks-proxy-agent": "^8.0.5"
   },
   "repository": {
     "type": "git",
