@@ -23,7 +23,7 @@
     "@discordjs/collection": "^1.5.3",
     "get-urls": "^10.0.0",
     "instagram-private-api": "^1.46.1",
-    "jimp": "^0.22.8",
+    "jimp": "^1.0.2",
     "instagram_mqtt": "^1.2.3",
     "node-fetch": "^2.7.0"
   },
