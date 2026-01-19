@@ -4,6 +4,7 @@ const {
   SkywalkerSubscriptions,
 } = require("instagram_mqtt/dist/realtime/subscriptions");
 const { IgApiClient } = require("instagram-private-api");
+const { SocksProxyAgent } = require("socks-proxy-agent");
 const { EventEmitter } = require("events");
 const { Collection } = require("@discordjs/collection");
 
@@ -342,6 +343,16 @@ class Client extends EventEmitter {
    * Log the bot in to Instagram
    * @param {string} username The username of the Instagram account.
    * @param {string} password The password of the Instagram account.
+   * @param {object} options The options of the Instagram Client.
+   * @example 
+   * client.login('username','pass',{
+   *  saveState: true,
+   *  socksProxy: {
+   *    type: 5,
+   *    host: '127.0.0.1',
+   *    port: 1080
+   *  }
+   * })
    * @returns {Promise<Object>}
    */
   async login(username, password, options) {
@@ -351,7 +362,12 @@ class Client extends EventEmitter {
       if (options.saveState) {
         ig.request.end$.subscribe(Util.saveFile(ig));
       };
-
+      const proxyOptions = {}
+      if ('socksProxy' in options) {
+        const agent = `socks${options.socksProxy.type}://${options.socksProxy.host}:${options.socksProxy.port}`
+        ig.request.defaults.agent = new SocksProxyAgent(agent)
+        proxyOptions['socksOptions'] = options.socksProxy
+      }
       ig.state.generateDevice(username);
 
       const state = Util.readFile();
@@ -400,6 +416,7 @@ class Client extends EventEmitter {
           SkywalkerSubscriptions.liveSub(ig.state.cookieUserId),
         ],
         irisData: await ig.feed.directInbox().request(),
+        ...proxyOptions
       });
       // PartialObserver<FbnsNotificationUnknown>
       ig.fbns.on("push", (data) => this.handleFbnsReceive(data));
